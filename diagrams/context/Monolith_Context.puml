@@ -1,0 +1,20 @@
+@startuml Тёплый дом
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Пользователь")
+Person(admin, "Администратор")
+
+System(warm_house, "Система Тёплый дом")
+Boundary(user_house, "Дом пользователя"){
+  System_Ext(heating, "Реле отопления")
+  System_Ext(temperature_sensor, "Датчик температуры")
+}
+
+Rel(user, warm_house, "Включить/выключить отопление")
+Rel(user, warm_house, "Посмотреть текущую температуру")
+
+Rel(admin, warm_house, "Администрирование пользователей и устройств")
+
+Rel(warm_house, heating, "Включить/выключить отопление")
+Rel(warm_house, temperature_sensor, "Запросить текущую температуру")
+@enduml 
