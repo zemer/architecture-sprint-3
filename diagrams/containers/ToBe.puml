@@ -1,0 +1,101 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(client, "Клиент")
+Person(support, "Техподдержка")
+Person(manager, "Продажи и маркетинг")
+
+Container_Ext(devices, "Устройства")
+
+System_Boundary(system, "Система Тёплый дом"){
+  Container(web_app, "Web Application")
+  Container(api_gateway, "API Gateway", "", "Аутентификация и авторизация, rate limiter")  
+
+  Boundary(external_boundary, "Контур для взаимодействия с устройствами"){
+    Container(devices_api_gateway, "API Gateway для устройств", "", "Обеспечивает безопасность, разрешает подключение только зарегистрированных устройств, rate limiter")
+    Container(commands_manager, "Обработчик команд") 
+
+    Lay_D(devices_api_gateway, commands_manager)
+  }
+  
+  Container_Boundary(clients_boundary, "Пользователи"){
+    Container(users_service, "Сервис управления пользователями")
+    ContainerDb(users_db, "База данных пользователей", "")
+  }
+
+  Container_Boundary(support_boundary, "Техподдержка"){
+    Container(support_service, "Сервис заявок")
+    ContainerDb(support_db, "База данных заявок", "")
+  }
+
+  Container_Boundary(sales_boundary, "Продвижение новых модульных комплектов"){
+    Container(sales_service, "Сервис модулей")
+    ContainerDb(sales_db, "База данных модулей", "")
+  }
+
+  Container_Boundary(devices_boundary, "Устройства"){
+    Container(device_service, "Сервис управления устройствами")
+    ContainerDb(devices_db, "База данных устройств", "")
+  }
+
+  Container_Boundary(telemetry_boundary, "Телеметрия"){
+    Container(telemetry, "Сервис телеметрии")
+    ContainerDb(telemetry_db, "База данных телеметрии", "")
+  }
+
+  Container_Boundary(scenario_boundary, "Сценарии"){
+    Container(scenario_service, "Сервис сценариев")
+    ContainerDb(scenario_db, "База данных сценариев", "")
+  }
+  
+  Container_Boundary(kafka_boundary, "Kafka"){
+    ContainerQueue(users_queue, "События пользователя", "")
+    ContainerQueue(devices_queue, "События управление устройств", "")
+    ContainerQueue(telemetry_queue, "События телеметрии устройств", "")
+    ContainerQueue(commands_queue, "События команд устройствам", "")
+  }
+}
+
+Rel(users_service, users_db, "")
+Rel(users_service, users_queue, "Добавлени и удаление пользователей")
+
+Rel(support_service, support_db, "")
+
+Rel(sales_service, sales_db, "")
+
+Rel(device_service, devices_db, "")
+Rel(device_service, commands_queue, "Отправка команды устройству вручную")
+Rel(device_service, devices_queue, "Добавление и удаление устройств")
+
+Rel(telemetry, telemetry_db, "")
+
+Rel(scenario_service, scenario_db, "")
+Rel(scenario_service, device_service, "Отправка команды устройству по сценарию")
+
+Rel(api_gateway, users_service, "Авторизация и управление пользователями")
+Rel(api_gateway, support_service, "Работа с заявками в техподдержку")
+Rel(api_gateway, sales_service, "Работа с новыми модулями")
+Rel(api_gateway, device_service, "Управление устройствами, отправка команд вручную")
+Rel(api_gateway, scenario_service, "Редактирование сценариев")
+Rel(api_gateway, telemetry, "Просмотр телеметрии")
+
+Rel(client, web_app, "")
+Rel(support, web_app, "")
+Rel(manager, web_app, "")
+
+Rel(web_app, api_gateway, "")
+
+Rel_L(devices, devices_api_gateway, "Отправка телеметрии")
+Rel_L(commands_manager, devices, "Отправка команд устройствам")
+Rel(devices_api_gateway, telemetry, "Отправка телеметрии")
+Rel(devices_api_gateway, device_service, "Авторизаця устройств")
+
+Rel(telemetry, telemetry_queue, "")
+Rel(telemetry_queue, scenario_service, "")
+Rel(commands_queue, commands_manager, "")
+Rel(devices_queue, scenario_service, "Добавление и удаление устройств")
+Rel(users_queue, scenario_service, "Добавление и удаление пользователя")
+Rel(users_queue, support_service, "Добавление и удаление пользователя")
+
+LAYOUT_WITH_LEGEND()
+@enduml
