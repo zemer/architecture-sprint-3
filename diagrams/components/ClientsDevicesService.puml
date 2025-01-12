@@ -1,0 +1,41 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(client_devices_container, "Сервис устройств клиентов"){
+  Component(api, "API", "REST")
+
+  Component(users_controller, "Контроллер пользователей", "")
+  Component(houses_controller, "Контроллер домов", "")
+  Component(devices_controller, "Контроллер устройств", "")
+
+  Component(users_repository, "Репозиторий пользователей", "")
+  Component(devices_repository, "Репозиторий устройств", "")
+  Component(houses_repository, "Репозиторий домов", "")
+  
+  Component(users_consumer, "Консьюмер событий пользователей", "")
+  Component(kafka_producer, "Продьюсер событий устройств клиентов", "")
+}
+
+ComponentDb(devices_db, "База данных устройств клиентов", "PSQL")
+
+ComponentQueue(users_queue, "Топик пользователей", "Kafka")
+ComponentQueue(devices_queue, "Топик устройств клиентов", "Kafka")
+
+Rel(api, houses_controller, "")
+Rel(api, devices_controller, "")
+
+Rel(kafka_producer, devices_queue, "")
+Rel(users_queue, users_consumer, "")
+Rel(devices_controller, kafka_producer, "")
+
+Rel(users_consumer, users_controller, "")
+Rel(users_controller, users_repository, "")
+Rel(devices_controller, users_repository, "")
+Rel(devices_controller, devices_repository, "")
+Rel(houses_controller, houses_repository, "")
+
+Rel(users_repository, devices_db, "")
+Rel(houses_repository, devices_db, "")
+Rel(devices_repository, devices_db, "")
+
+@enduml

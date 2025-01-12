@@ -1,0 +1,52 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(client_devices_container, "Сервис сценариев"){
+  Component(api, "API", "REST")
+
+  Component(users_controller, "Контроллер пользователей", "")
+  Component(scenario_runner, "Исполнитель сценариев", "")
+  Component(scenario_controller, "Контроллер управления сценариями", "")
+  Component(devices_conroller, "Контроллер устройств клиентов", "")
+
+  Component(users_repository, "Репозиторий пользователей", "")
+  Component(scenario_repository, "Репозиторий сценариев", "")
+  Component(devices_repository, "Репозиторий устройств", "")
+  
+  Component(users_consumer, "Консьюмер событий пользователей", "")
+  Component(telemetry_consumer, "Консьюмер событий телеметрии", "")
+  Component(user_devices_consumer, "Консьюмер событий устройств клиентов", "")
+}
+
+ComponentDb(scenario_db, "База данных сценариев", "PSQL")
+
+ComponentQueue(users_queue, "Топик пользователей", "Kafka")
+ComponentQueue(telemetry_queue, "Топик телеметрии", "Kafka")
+ComponentQueue(devices_queue, "Топик устройств клиентов", "Kafka")
+
+Container_Ext(devices_service, "Сервис управления устройствами", "")
+
+Rel(api, scenario_controller, "")
+
+Rel(devices_queue, user_devices_consumer, "")
+Rel(users_queue, users_consumer, "")
+Rel(telemetry_queue, telemetry_consumer, "")
+Rel(telemetry_consumer, scenario_runner, "")
+
+Rel(user_devices_consumer, devices_conroller, "")
+
+Rel(scenario_runner, scenario_repository, "")
+Rel(scenario_runner, devices_service, "Отправка команд устройствам по сценарию")
+
+Rel(devices_conroller, devices_repository, "")
+
+Rel(users_consumer, users_controller, "")
+Rel(users_controller, users_repository, "")
+Rel(scenario_controller, users_repository, "")
+Rel(scenario_controller, scenario_repository, "")
+
+Rel(users_repository, scenario_db, "")
+Rel(scenario_repository, scenario_db, "")
+Rel(devices_repository, scenario_db, "")
+
+@enduml

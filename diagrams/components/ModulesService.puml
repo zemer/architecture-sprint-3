@@ -1,0 +1,25 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(client_devices_container, "Сервис комплектов модулей"){
+  Component(api, "API", "REST")
+
+  Component(modules_controller, "Контроллер модулей", "")
+  Component(devices_controller, "Контроллер устройств пользователей", "")
+
+  Component(modules_repository, "Репозиторий модулей", "")
+  Component(devices_repository, "Репозиторий устройств пользователей", "")
+}
+
+ComponentDb(devices_db, "База данных устройств клиентов", "PSQL")
+
+Rel(api, modules_controller, "")
+Rel(api, devices_controller, "")
+
+Rel(devices_controller, devices_repository, "")
+Rel(modules_controller, modules_repository, "")
+
+Rel(modules_repository, devices_db, "")
+Rel(devices_repository, devices_db, "")
+
+@enduml

@@ -1,0 +1,43 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(auth_container, "Сервис авторизации"){
+  Component(api, "API", "REST")
+  
+  Component(login_controller, "Контроллер логина\логаута", "")
+  Component(register_controller, "Контроллер регистрации", "")
+
+  Component(users_controller, "Контроллер пользователей", "")
+  Component(roles_controller, "Контроллер ролей", "")
+
+  Component(users_repository, "Репозиторий пользователей", "")
+  Component(roles_repository, "Репозиторий ролей", "")
+  
+  Component(kafka_producer, "Продьюсер событий пользователя", "")
+}
+
+ComponentDb(auth_db, "База данных сервиса авторизации", "PSQL")
+
+ComponentQueue(users_queue, "Топик пользователей", "Kafka")
+
+Rel_D(api, login_controller, "")
+Rel_D(api, register_controller, "")
+Rel_D(api, users_controller, "")
+Rel_D(api, roles_controller, "")
+
+Rel(login_controller, users_repository, "")
+Rel(register_controller, users_repository, "")
+Rel(register_controller, roles_repository, "")
+Rel(users_controller, users_repository, "")
+Rel(roles_controller, roles_repository, "")
+
+Rel(register_controller, kafka_producer, "")
+Rel(users_controller, kafka_producer, "")
+Rel(roles_controller, kafka_producer, "")
+
+Rel(kafka_producer, users_queue, "")
+
+Rel(users_repository, auth_db, "")
+Rel(roles_repository, auth_db, "")
+
+@enduml
