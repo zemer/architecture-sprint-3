@@ -53,22 +53,28 @@
 
 ### 5. Визуализация контекста системы — диаграмма С4
 
-[Диаграмма контекста As-Is решения](./diagrams/context/AsIs_Context.png)
+[Диаграмма контекста As-Is решения](./diagrams/out/diagrams/context/Тёплый дом.png)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
 **Диаграмма контейнеров (Containers)**
 
-[Диаграмма контейнеров](./diagrams/containers/ToBe.png)
+[Диаграмма контейнеров](./diagrams/out/diagrams/containers/ToBe.png)
 
 **Диаграмма компонентов (Components)**
 
-Добавьте диаграмму для каждого из выделенных микросервисов.
+[Диаграмма сервиса авторизации](./diagrams/out/diagrams/components/AuthService.png)
+[Диаграмма сервиса устройств клиентов](./diagrams/out/diagrams/components/ClientsDevicesService.png)
+[Диаграмма сервиса управления устройствами](./diagrams/out/diagrams/components/ManageDevicesService.png)
+[Диаграмма сервиса комплектов модулей](./diagrams/out/diagrams/components/ModulesService.png)
+[Диаграмма сервиса сценариев](./diagrams/out/diagrams/components/ScenarioService.png)
+[Диаграмма сервиса техподдержки](./diagrams/out/diagrams/components/SupportService.png)
 
 **Диаграмма кода (Code)**
 
-Добавьте одну диаграмму или несколько.
+[Диаграмма сервиса устройств клиентов](./diagrams/out/diagrams/code/ClientDevicesService.png)
+[Диаграмма сервиса управления устройствами](./diagrams/out/diagrams/code/ManageDevicesService.png)
 
 # Задание 3. Разработка ER-диаграммы
 
-Добавьте сюда ER-диаграмму. Она должна отражать ключевые сущности системы, их атрибуты и тип связей между ними.
+[ER-диаграмма](./diagrams/out/diagrams/ER/er.png)
