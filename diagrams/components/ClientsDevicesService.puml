@@ -4,7 +4,6 @@
 Container_Boundary(client_devices_container, "Сервис устройств клиентов"){
   Component(api, "API", "REST")
 
-  Component(users_controller, "Контроллер пользователей", "")
   Component(houses_controller, "Контроллер домов", "")
   Component(devices_controller, "Контроллер устройств", "")
 
@@ -28,8 +27,7 @@ Rel(kafka_producer, devices_queue, "")
 Rel(users_queue, users_consumer, "")
 Rel(devices_controller, kafka_producer, "")
 
-Rel(users_consumer, users_controller, "")
-Rel(users_controller, users_repository, "")
+Rel(users_consumer, users_repository, "")
 Rel(devices_controller, users_repository, "")
 Rel(devices_controller, devices_repository, "")
 Rel(houses_controller, houses_repository, "")
