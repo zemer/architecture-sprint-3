@@ -12,19 +12,19 @@ Person(manager, "Продажи и маркетинг")
 Container_Ext(devices, "Устройства")
 
 System_Boundary(system, "Система Тёплый дом"){
-  Container(web_app, "Web Application")
-  Container(api_gateway, "API Gateway", "", "Авторизация, rate limiter")  
+  Container(web_app, "Web Application", "React")
+  Container(api_gateway, "API Gateway", "Kong", "Авторизация, rate limiter")  
 
   Boundary(auth_boundary, "Авторизация"){
-    Container(auth_service, "Сервис авторизации", "", "Авторизация, регистрация пользователей, управление ролями")  
+    Container(auth_service, "Сервис авторизации", "Java", "Авторизация, регистрация пользователей, управление ролями")  
     ContainerDb(auth_db, "База данных авторизаци", "PSQL")
     Rel(auth_service, auth_db, "")
   }
   
   Boundary(clients, "Клиенты"){
-    Container(clients_service, "Сервис устройств клиентов", "", "Учет клиентов, адресов и привязанных устройств")
-    Container(support_service, "Сервис техподдержки", "", "Управление заявками в техподдержку")
-    Container(sales_service, "Сервис комплектов модулей", "", "Продвижение новых модулей") 
+    Container(clients_service, "Сервис устройств клиентов", "Java", "Учет клиентов, адресов и привязанных устройств")
+    Container(support_service, "Сервис техподдержки", "Java", "Управление заявками в техподдержку")
+    Container(sales_service, "Сервис комплектов модулей", "Java", "Продвижение новых модулей") 
     ContainerDb(clients_db, "База данных клиентов", "PSQL")
 
     Rel(clients_service, clients_db, "")
@@ -33,20 +33,20 @@ System_Boundary(system, "Система Тёплый дом"){
   }
 
   Boundary(scenario_boundary, "Сценарии"){
-    Container(scenario_service, "Сервис сценариев", "", "Просмотр, редактирование сценариев, реагирование на изменения телеметрии")
+    Container(scenario_service, "Сервис сценариев", "Java", "Просмотр, редактирование сценариев, реагирование на изменения телеметрии")
     ContainerDb(scenario_db, "База данных сценариев", "PSQL")
 
     Rel(scenario_service, scenario_db, "")
   }
 
   Boundary(devices_boundary, "Управление устройствами"){
-    Container(device_service, "Сервис управления устройствами", "", "Взаимодействие с устройствами, взаимодействие только с зарегистрированными устройствами, rate limiter, прием телеметрии")
+    Container(device_service, "Сервис управления устройствами", "Java", "Взаимодействие с устройствами, взаимодействие только с зарегистрированными устройствами, rate limiter, прием телеметрии")
     ContainerDb(device_db, "База данных управления устройствами", "PSQL")
 
     Rel(device_service, device_db, "")
   }
 
-  ContainerDb(kafka, "Kafka", "", "Топик пользователей\nТопик устройств клиентов\nТопик команд устройствам\nТопик телеметрии")
+  ContainerDb(kafka, "Kafka", "Kafka", "Топик пользователей\nТопик устройств клиентов\nТопик команд устройствам\nТопик телеметрии")
 }
 
 Rel(scenario_service, device_service, "")
