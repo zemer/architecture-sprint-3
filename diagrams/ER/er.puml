@@ -39,6 +39,13 @@ package Clients <<Database>> {
     * address: text
   }
 
+  entity HouseUser {
+    * id: guid <<generated>>
+    --
+    * user_id: guid <<FK>>
+    * house_id: guid <<FK>>
+  }
+
   entity DeviceType {
     * id: guid <<generated>>
     --
@@ -61,7 +68,8 @@ package Clients <<Database>> {
     * messages: text
   }
 
-  User ||--o{ House
+  User ||--o{ HouseUser
+  House ||--o{ HouseUser
   House ||--o{ Device
   DeviceType ||--o{ Device
   User ||--o{ Issue
