@@ -1,0 +1,79 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+skinparam linetype ortho
+skinparam nodesep 100
+skinparam ranksep 100
+
+Person(client, "Клиент")
+Person(support, "Техподдержка")
+Person(manager, "Продажи и маркетинг")
+
+Container_Ext(devices, "Устройства")
+
+System_Boundary(system, "Система Тёплый дом"){
+  Container(web_app, "Web Application", "React")
+  Container(api_gateway, "API Gateway", "Kong", "Авторизация, rate limiter")  
+
+  Boundary(auth_boundary, "Авторизация"){
+    Container(auth_service, "Сервис авторизации", "Java", "Авторизация, регистрация пользователей, управление ролями")  
+    ContainerDb(auth_db, "База данных авторизаци", "PSQL")
+    Rel(auth_service, auth_db, "")
+  }
+  
+  Boundary(clients, "Клиенты"){
+    Container(clients_service, "Сервис устройств клиентов", "Java", "Учет клиентов, адресов и привязанных устройств")
+    Container(support_service, "Сервис техподдержки", "Java", "Управление заявками в техподдержку")
+    Container(sales_service, "Сервис комплектов модулей", "Java", "Продвижение новых модулей") 
+    ContainerDb(clients_db, "База данных клиентов", "PSQL")
+
+    Rel(clients_service, clients_db, "")
+    Rel(support_service, clients_db, "")
+    Rel(sales_service, clients_db, "")
+  }
+
+  Boundary(scenario_boundary, "Сценарии"){
+    Container(scenario_service, "Сервис сценариев", "Java", "Просмотр, редактирование сценариев, реагирование на изменения телеметрии")
+    ContainerDb(scenario_db, "База данных сценариев", "PSQL")
+
+    Rel(scenario_service, scenario_db, "")
+  }
+
+  Boundary(devices_boundary, "Управление устройствами"){
+    Container(device_service, "Сервис управления устройствами", "Java", "Взаимодействие с устройствами, взаимодействие только с зарегистрированными устройствами, rate limiter, прием телеметрии")
+    ContainerDb(device_db, "База данных управления устройствами", "PSQL")
+
+    Rel(device_service, device_db, "")
+  }
+
+  ContainerDb(kafka, "Kafka", "Kafka", "Топик пользователей\nТопик устройств клиентов\nТопик команд устройствам\nТопик телеметрии")
+}
+
+Rel(scenario_service, device_service, "")
+
+Rel(api_gateway, auth_service, "")
+Rel(api_gateway, clients_service, "")
+Rel(api_gateway, support_service, "")
+Rel(api_gateway, sales_service, "")
+Rel(api_gateway, device_service, "")
+Rel(api_gateway, scenario_service, "")
+
+Rel(client, web_app, "")
+Rel(support, web_app, "")
+Rel(manager, web_app, "")
+
+Rel(web_app, api_gateway, "")
+
+Rel(device_service, devices, "")
+Rel(devices, device_service, "")
+
+Rel(auth_service, kafka, "")
+
+Rel(device_service, kafka, "")
+Rel(clients_service, kafka, "")
+Rel(kafka, scenario_service, "")
+Rel(kafka, device_service, "")
+Rel(kafka, clients_service, "")
+
+LAYOUT_WITH_LEGEND()
+@enduml

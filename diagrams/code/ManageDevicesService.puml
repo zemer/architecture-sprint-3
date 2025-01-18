@@ -1,0 +1,103 @@
+@startuml
+struct QueueCommand {
+  DeviceId: int;
+  Command: string;
+}
+
+class CommandConsumer {
+  CommandSender: ICommandSender;
+  void Consume();
+}
+
+struct DeviceCommand {
+  DeviceId: int;
+  Command: string;
+}
+
+struct DeviceCommandResult {
+  Result: string;
+}
+
+interface ICommandSender {
+  DeviceCommandResult Send(DeviceCommand command);
+}
+
+class CommandSender {
+  DeviceCommandResult Send(DeviceCommand command);
+}
+
+struct TelemetryData {
+  DeviceId: int;
+  Date: int;
+}
+
+interface ITelemetryRepository {
+  void AddTelemetry(int deviceId, TelemetryData telemetry);
+  TelemetryData[] GetTelemetry(int deviceId)
+}
+
+class TelemetryRepository {
+  DevicesContext Context;
+  void AddTelemetry(int deviceId, TelemetryData telemetry);
+  TelemetryData[] GetTelemetry(int deviceId)
+}
+
+class DevicesContext {
+  Set Telemetry;
+  Set Devices;
+}
+
+struct TelemetryResponse {
+  int DeviceId;
+  int Data;
+}
+
+class TelemetryController {
+  ITelemetryRepository Repository;
+  TelemetryResponse GetTelemetry(int deviceId);
+}
+
+class TelemetryApi {
+  ITelemetryRepository Repository;
+  ITelemetryProducer TelemetryProducer;
+  WriteTelemetry(int deviceId, int data);
+}
+
+struct TelemetryProduceData {
+  int DeviceId;
+  int Data;
+}
+
+interface ITelemetryProducer {
+  Produce(TelemetryProduceData data)
+}
+
+class TelemetryProducer {
+  Produce(TelemetryProduceData data)
+}
+
+ICommandSender <|-- CommandSender
+
+QueueCommand --* CommandConsumer
+CommandSender --o CommandConsumer
+
+DeviceCommand --* ICommandSender
+DeviceCommandResult --* ICommandSender
+
+TelemetryData --* ITelemetryRepository
+
+ITelemetryRepository <|-- TelemetryRepository
+
+DevicesContext --o TelemetryRepository
+
+TelemetryResponse --o TelemetryController
+ITelemetryRepository --o TelemetryController
+
+ITelemetryRepository --o TelemetryApi
+ITelemetryProducer --o TelemetryApi
+
+TelemetryProduceData --* TelemetryProducer
+
+ITelemetryProducer <|-- TelemetryProducer
+
+@enduml

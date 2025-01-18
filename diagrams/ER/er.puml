@@ -1,0 +1,132 @@
+@startuml
+
+package Auth <<Database>> {
+  entity User {
+    * id: guid <<generated>>
+    --
+    * name: text
+    * phone: text
+  }
+
+  entity Role {
+    * id: guid <<generated>>
+    --
+    * name: text
+  }
+
+  entity UserRole {
+    * id: guid <<generated>>
+    --
+    * user_id: guid <<FK>>
+    * role_id: guid <<FK>>
+  }
+
+  User ||--o{ UserRole
+  Role ||--o{ UserRole
+}
+
+package Clients <<Database>> {
+  entity User {
+    * id: guid <<generated>>
+    --
+    * **public_user_id: guid**
+  }
+
+  entity House {
+    * id: guid <<generated>>
+    --
+    * user_id: guid <<FK>>
+    * address: text
+  }
+
+  entity HouseUser {
+    * id: guid <<generated>>
+    --
+    * user_id: guid <<FK>>
+    * house_id: guid <<FK>>
+  }
+
+  entity DeviceType {
+    * id: guid <<generated>>
+    --
+    * name: text
+  }
+
+  entity Device {
+    * id: guid <<generated>>
+    --
+    * type_id: guid <<FK>>
+    * house_id: guid <<FK>>
+    * serial_number: text
+  }
+
+  entity Issue {
+    * id: guid <<generated>>
+    --
+    * user_id: guid <<FK>>
+    * responsible_user_id: guid <<FK>>
+    * messages: text
+  }
+
+  User ||--o{ HouseUser
+  House ||--o{ HouseUser
+  House ||--o{ Device
+  DeviceType ||--o{ Device
+  User ||--o{ Issue
+}
+
+package Devices <<Database>> {
+
+  entity Device {
+    * id: guid <<generated>>
+    --
+    * **public_device_id: guid**
+    * status: number
+  }
+
+  entity Telemetry {
+    * id: guid <<generated>>
+    --
+    * device_id: guid <<FK>>
+  }
+
+  Device ||--o{ Telemetry
+}
+
+package Scenario <<Database>> {
+
+  entity User {
+    * id: guid <<generated>>
+    --
+    * **public_user_id: guid**
+  }
+
+  entity Device {
+    * id: guid <<generated>>
+    --
+    * **public_device_id: guid**
+  }
+
+  entity Scenario {
+    * id: guid <<generated>>
+    --
+    * user_id: guid <<FK>>
+    * name: text
+  }
+
+  entity ScenarioStep {
+    * id: guid <<generated>>
+    --
+    * scenario_id: guid <<FK>>
+    * device_id: guid <<FK>>
+    * order: number
+    * condition: text
+    * command: number
+  }
+
+  User ||--o{ Scenario
+  Scenario ||--o{ ScenarioStep
+  ScenarioStep ||--|| Device
+}
+
+@enduml

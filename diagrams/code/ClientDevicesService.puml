@@ -1,0 +1,140 @@
+@startuml
+
+
+struct QueueUser {
+  UserId: Guid;
+}
+
+class UsersConsumer {
+  UsersRepository: IUsersRepository;
+  void Consume(QueueUser data);
+}
+
+
+struct UserData {
+  UserId: Guid;
+  Phone: string;
+}
+
+interface IUsersRepository {
+  UserData[] GetUsers()
+  UserData GetUser(Guid userId);
+  void Add(UserData user);
+  void Update(UserData user);
+  void Delete(Guid userId);
+}
+
+class UsersRepository {
+  DevicesContext Context;
+  UserData[] GetUsers()
+  UserData GetUser(Guid userId);
+  void Add(UserData user);
+  void Update(UserData user);
+  void Delete(Guid userId);
+}
+
+class DevicesContext {
+  Users: Set;
+  Houses: Set;
+  Issues: Set;
+  Devices: Set;
+  DeviceTypes: Set;
+}
+
+struct HouseData {
+  HouseId: Guid;
+  Address: string;
+}
+
+interface IHousesRepository {
+  DevicesContext Context;
+  HouseData[] GetHouses()
+  HouseData GetHouse(Guid houseId);
+  void Add(HouseData house);
+  void Update(HouseData house);
+  void Delete(Guid houseId);
+}
+
+class HousesRepository {
+  DevicesContext Context;
+  HouseData[] GetHouses()
+  HouseData GetHouse(Guid houseId);
+  void Add(HouseData house);
+  void Update(HouseData house);
+  void Delete(Guid houseId);
+}
+
+class HousesController {
+  HousesRepository: IHousesRepository
+}
+
+struct DeviceData {
+  DeviceId: Guid;
+  TypeId: Guid;
+  HouseId: Guid;
+  SerialNumber: string;
+}
+
+interface IDevicesRepository {
+  DevicesContext Context;
+  DeviceData[] GetDevices()
+  DeviceData GetHouse(Guid deviceId);
+  void Add(DeviceData device);
+  void Update(DeviceData device);
+  void Delete(Guid deviceId);
+}
+
+class DevicesRepository {
+  DevicesContext Context;
+  DeviceData[] GetDevices()
+  DeviceData GetHouse(Guid deviceId);
+  void Add(DeviceData device);
+  void Update(DeviceData device);
+  void Delete(Guid deviceId);
+}
+
+class DevicesController {
+  DevicesRepository: IDevicesRepository
+  DevicesProducer: IDevicesProducer
+}
+
+struct DeviceKafkaData {
+  DeviceId: Guid;
+  TypeId: Guid;
+  HouseId: Guid;
+  SerialNumber: string;
+}
+
+interface IDevicesProducer {
+  void Produce(DeviceKafkaData data);
+}
+
+class DevicesProducer {
+  void Produce(DeviceKafkaData data);
+}
+
+IUsersRepository <|-- UsersRepository
+DevicesContext --o UsersRepository
+UserData --* IUsersRepository
+
+IHousesRepository <|-- HousesRepository
+DevicesContext --o HousesRepository
+HouseData --* IHousesRepository
+
+IDevicesRepository <|-- DevicesRepository
+DevicesContext --o DevicesRepository
+DeviceData --* IDevicesRepository
+
+IUsersRepository --o UsersConsumer
+QueueUser --* UsersConsumer
+
+
+IHousesRepository --o HousesController
+IDevicesRepository --o DevicesController
+IDevicesProducer --o DevicesController
+
+
+IDevicesProducer <|-- DevicesProducer
+DeviceKafkaData --* IDevicesProducer
+
+@enduml

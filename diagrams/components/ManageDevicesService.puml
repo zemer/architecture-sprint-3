@@ -1,0 +1,52 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+Container_Boundary(client_devices_container, "Сервис управления устройствами"){
+  Component(api, "API", "REST")
+
+  Component(telemetry_api, "Telemetry API", "")
+
+  Component(devices_conroller, "Контроллер устройств клиентов", "")
+  Component(telemetry_conroller, "Контроллер телеметрии", "")
+  Component(commands_runner, "Обработчик команд", "")
+
+  Component(devices_repository, "Репозиторий устройств", "")
+  Component(telemetry_repository, "Репозиторий телеметрии", "")
+  
+  Component(telemetry_producer, "Продьюсер событий телеметрии", "")
+  Component(commands_consumer, "Консьюмер событий команд", "")
+  Component(user_devices_consumer, "Консьюмер событий устройств клиентов", "")
+}
+
+ComponentDb(devices_db, "База данных управление уствройств", "PSQL")
+
+ComponentQueue(telemetry_queue, "Топик телеметрии", "Kafka")
+ComponentQueue(devices_queue, "Топик устройств клиентов", "Kafka")
+ComponentQueue(commands_queue, "Топик команд устройствам", "Kafka")
+
+Container_Ext(devices, "Устройства", "")
+
+Rel(api, devices_conroller, "")
+Rel(api, telemetry_conroller, "")
+
+Rel(telemetry_conroller, telemetry_repository, "")
+
+Rel(devices, telemetry_api, "Телеметрия")
+Rel(telemetry_api, telemetry_repository, "")
+Rel(telemetry_api, telemetry_producer, "")
+Rel(telemetry_api, devices_conroller, "")
+
+Rel(devices_queue, user_devices_consumer, "")
+Rel(telemetry_producer, telemetry_queue, "")
+Rel(commands_queue, commands_consumer, "")
+Rel(commands_consumer, commands_runner, "")
+Rel_U(commands_runner, devices, "Отправка команд устройствам")
+
+Rel(user_devices_consumer, devices_conroller, "")
+
+Rel(devices_conroller, devices_repository, "")
+
+Rel(devices_repository, devices_db, "")
+Rel(telemetry_repository, devices_db, "")
+
+@enduml
